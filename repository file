@@ -1,0 +1,9 @@
+# Airline Reservation System
+This is a simple Airline Reservation System built using Java. It allows users to book and cancel flights, and admins to manage flight details.
+
+## Technologies Used
+- Java (JDK 17)
+- MySQL (for storing flight data)
+
+## Installation
+1. Clone the repository:
