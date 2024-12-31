@@ -1,0 +1,301 @@
+public class Flight {
+    private String flightNumber;
+    private String destination;
+    private String date;
+    private int availableSeats;
+
+    public Flight(String flightNumber, String destination, String date, int availableSeats) {
+        this.flightNumber = flightNumber;
+        this.destination = destination;
+        this.date = date;
+        this.availableSeats = availableSeats;
+    }
+
+    // Getters and Setters
+    public String getFlightNumber() {
+        return flightNumber;
+    }
+
+    public String getDestination() {
+        return destination;
+    }
+#represents a file
+    public String getDate() {
+        return date;
+    }
+
+    public int getAvailableSeats() {
+        return availableSeats;
+    }
+
+    public void bookSeat() {
+        if (availableSeats > 0) {
+            availableSeats--;
+        } else {
+            System.out.println("No available seats.");
+        }
+    }
+
+    public void cancelSeat() {
+        availableSeats++;
+    }
+
+    public void displayFlightInfo() {
+        System.out.println("Flight Number: " + flightNumber);
+        System.out.println("Destination: " + destination);
+        System.out.println("Date: " + date);
+        System.out.println("Available Seats: " + availableSeats);
+    }
+}
+#represents a user
+import java.util.ArrayList;
+
+public class User {
+    private String username;
+    private String password;
+    private ArrayList<Flight> bookedFlights;
+
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+        this.bookedFlights = new ArrayList<>();
+    }
+
+    public boolean authenticate(String password) {
+        return this.password.equals(password);
+    }
+
+    public void bookFlight(Flight flight) {
+        if (flight.getAvailableSeats() > 0) {
+            flight.bookSeat();
+            bookedFlights.add(flight);
+            System.out.println("Booking successful.");
+        } else {
+            System.out.println("No available seats.");
+        }
+    }
+
+    public void cancelFlight(Flight flight) {
+        if (bookedFlights.contains(flight)) {
+            flight.cancelSeat();
+            bookedFlights.remove(flight);
+            System.out.println("Booking cancelled.");
+        } else {
+            System.out.println("No such booking found.");
+        }
+    }
+
+    public void displayBookedFlights() {
+        if (bookedFlights.isEmpty()) {
+            System.out.println("No booked flights.");
+        } else {
+            System.out.println("Booked Flights:");
+            for (Flight flight : bookedFlights) {
+                flight.displayFlightInfo();
+            }
+        }
+    }
+}
+#Admin controls to add/remove flights
+import java.util.ArrayList;
+
+public class Admin {
+    private String username = "admin";
+    private String password = "admin123";
+    private ArrayList<Flight> flights;
+
+    public Admin() {
+        this.flights = new ArrayList<>();
+    }
+
+    public boolean authenticate(String username, String password) {
+        return this.username.equals(username) && this.password.equals(password);
+    }
+
+    public void addFlight(Flight flight) {
+        flights.add(flight);
+        System.out.println("Flight added successfully.");
+    }
+
+    public void removeFlight(Flight flight) {
+        if (flights.contains(flight)) {
+            flights.remove(flight);
+            System.out.println("Flight removed successfully.");
+        } else {
+            System.out.println("Flight not found.");
+        }
+    }
+
+    public void displayAllFlights() {
+        if (flights.isEmpty()) {
+            System.out.println("No flights available.");
+        } else {
+            System.out.println("All Flights:");
+            for (Flight flight : flights) {
+                flight.displayFlightInfo();
+            }
+        }
+    }
+}
+#Manages user and admin interaction
+import java.util.Scanner;
+
+public class AirlineReservationSystem {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Admin admin = new Admin();
+        User user = null;  // User will be null until they log in
+
+        // Sample flights
+        Flight flight1 = new Flight("AA101", "New York", "2024-01-10", 5);
+        Flight flight2 = new Flight("BB202", "Los Angeles", "2024-02-15", 10);
+        admin.addFlight(flight1);
+        admin.addFlight(flight2);
+
+        while (true) {
+            System.out.println("Welcome to Airline Reservation System");
+            System.out.println("1. User Login");
+            System.out.println("2. Admin Login");
+            System.out.println("3. Exit");
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline character
+
+            if (choice == 1) {
+                System.out.print("Enter username: ");
+                String username = scanner.nextLine();
+                System.out.print("Enter password: ");
+                String password = scanner.nextLine();
+
+                user = new User(username, password);  // Create a new user instance
+                System.out.println("Login successful!");
+
+                // User menu
+                while (true) {
+                    System.out.println("\nUser Menu:");
+                    System.out.println("1. Search Flights");
+                    System.out.println("2. Book a Flight");
+                    System.out.println("3. Cancel a Booking");
+                    System.out.println("4. View Booked Flights");
+                    System.out.println("5. Logout");
+                    System.out.print("Choose an option: ");
+                    int userChoice = scanner.nextInt();
+                    scanner.nextLine();  // Consume newline
+
+                    switch (userChoice) {
+                        case 1:
+                            admin.displayAllFlights();
+                            break;
+                        case 2:
+                            System.out.print("Enter flight number to book: ");
+                            String flightNumber = scanner.nextLine();
+                            Flight flightToBook = null;
+                            for (Flight flight : admin.flights) {
+                                if (flight.getFlightNumber().equals(flightNumber)) {
+                                    flightToBook = flight;
+                                    break;
+                                }
+                            }
+                            if (flightToBook != null) {
+                                user.bookFlight(flightToBook);
+                            } else {
+                                System.out.println("Flight not found.");
+                            }
+                            break;
+                        case 3:
+                            System.out.print("Enter flight number to cancel: ");
+                            flightNumber = scanner.nextLine();
+                            Flight flightToCancel = null;
+                            for (Flight flight : user.bookedFlights) {
+                                if (flight.getFlightNumber().equals(flightNumber)) {
+                                    flightToCancel = flight;
+                                    break;
+                                }
+                            }
+                            if (flightToCancel != null) {
+                                user.cancelFlight(flightToCancel);
+                            } else {
+                                System.out.println("Booking not found.");
+                            }
+                            break;
+                        case 4:
+                            user.displayBookedFlights();
+                            break;
+                        case 5:
+                            System.out.println("Logging out...");
+                            break;
+                    }
+
+                    if (userChoice == 5) break;
+                }
+            } else if (choice == 2) {
+                System.out.print("Enter admin username: ");
+                String adminUsername = scanner.nextLine();
+                System.out.print("Enter admin password: ");
+                String adminPassword = scanner.nextLine();
+
+                if (admin.authenticate(adminUsername, adminPassword)) {
+                    System.out.println("Admin Login successful!");
+                    // Admin menu
+                    while (true) {
+                        System.out.println("\nAdmin Menu:");
+                        System.out.println("1. Add Flight");
+                        System.out.println("2. Remove Flight");
+                        System.out.println("3. View All Flights");
+                        System.out.println("4. Logout");
+                        System.out.print("Choose an option: ");
+                        int adminChoice = scanner.nextInt();
+                        scanner.nextLine();  // Consume newline
+
+                        switch (adminChoice) {
+                            case 1:
+                                System.out.print("Enter flight number: ");
+                                String flightNumber = scanner.nextLine();
+                                System.out.print("Enter destination: ");
+                                String destination = scanner.nextLine();
+                                System.out.print("Enter date: ");
+                                String date = scanner.nextLine();
+                                System.out.print("Enter available seats: ");
+                                int availableSeats = scanner.nextInt();
+                                scanner.nextLine();  // Consume newline
+                                Flight newFlight = new Flight(flightNumber, destination, date, availableSeats);
+                                admin.addFlight(newFlight);
+                                break;
+                            case 2:
+                                System.out.print("Enter flight number to remove: ");
+                                flightNumber = scanner.nextLine();
+                                Flight flightToRemove = null;
+                                for (Flight flight : admin.flights) {
+                                    if (flight.getFlightNumber().equals(flightNumber)) {
+                                        flightToRemove = flight;
+                                        break;
+                                    }
+                                }
+                                if (flightToRemove != null) {
+                                    admin.removeFlight(flightToRemove);
+                                } else {
+                                    System.out.println("Flight not found.");
+                                }
+                                break;
+                            case 3:
+                                admin.displayAllFlights();
+                                break;
+                            case 4:
+                                System.out.println("Logging out...");
+                                break;
+                        }
+
+                        if (adminChoice == 4) break;
+                    }
+                } else {
+                    System.out.println("Invalid credentials.");
+                }
+            } else if (choice == 3) {
+                System.out.println("Exiting...");
+                break;
+            }
+        }
+
+        scanner.close();
+    }
+}
