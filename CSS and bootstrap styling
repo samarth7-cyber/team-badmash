@@ -1,0 +1,33 @@
+body {
+    background-color: #f4f4f4;
+    font-family: Arial, sans-serif;
+}
+
+h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.form-control {
+    border-radius: 0.5rem;
+    box-shadow: none;
+}
+
+button {
+    border-radius: 0.5rem;
+    font-weight: bold;
+}
+
+.invalid-feedback {
+    font-size: 0.875rem;
+}
+
+.container {
+    max-width: 800px;
+}
+
+@media (max-width: 767px) {
+    .container {
+        padding: 15px;
+    }
+}
